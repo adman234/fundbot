@@ -5,12 +5,31 @@ Serves the static sheet plus a JSON endpoint. No write paths are exposed;
 the only mutation route into the database remains the Discord commands.
 """
 
+import io
 import os
 from datetime import datetime, timezone
 
+import qrcode
+import qrcode.image.svg
 from aiohttp import web
 
 DONATE_URL = os.environ.get("DONATE_URL", "").strip()
+
+
+def _donate_qr_svg(url: str) -> str | None:
+    """Rendered once at startup - the donate link is fixed for the process lifetime."""
+    if not url:
+        return None
+    qr = qrcode.QRCode(border=4, box_size=10)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(image_factory=qrcode.image.svg.SvgPathImage)
+    buf = io.BytesIO()
+    img.save(buf)
+    return buf.getvalue().decode("utf-8").replace('fill="#000000"', 'fill="#101A22"')
+
+
+DONATE_QR_SVG = _donate_qr_svg(DONATE_URL)
 
 
 def build_app(db, totals_fn, static_dir: str, show_donors: bool = True):
@@ -60,6 +79,16 @@ def build_app(db, totals_fn, static_dir: str, show_donors: bool = True):
     @routes.get("/healthz")
     async def healthz(request: web.Request) -> web.Response:
         return web.Response(text="ok")
+
+    @routes.get("/qr.svg")
+    async def qr_svg(request: web.Request) -> web.Response:
+        if not DONATE_QR_SVG:
+            raise web.HTTPNotFound()
+        return web.Response(
+            text=DONATE_QR_SVG,
+            content_type="image/svg+xml",
+            headers={"Cache-Control": "public, max-age=86400"},
+        )
 
     @routes.get("/")
     async def index(request: web.Request):

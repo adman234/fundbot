@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shop Fund — Status Sheet</title>
+<link rel="icon" type="image/png" href="/static/fundbot.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -91,6 +92,76 @@
     margin: 0;
   }
 
+  /* ---------- give panel (top-of-sheet donate + QR) ---------- */
+
+  .give-panel {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.25rem, 3vw, 2rem);
+    padding: clamp(1.25rem, 4vw, 2.75rem);
+    border-bottom: 1.5px solid var(--ink);
+    background:
+      repeating-linear-gradient(
+        -45deg,
+        transparent 0 5px,
+        rgba(97, 114, 124, .07) 5px 6px
+      );
+  }
+
+  .give-qr {
+    flex: 0 0 auto;
+    line-height: 0;
+    padding: .5rem;
+    background: var(--paper);
+    border: 1.5px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .give-qr img {
+    display: block;
+    width: clamp(96px, 16vw, 152px);
+    height: clamp(96px, 16vw, 152px);
+  }
+
+  .give-copy {
+    flex: 1 1 auto;
+    min-width: 9rem;
+  }
+
+  .give-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .6875rem;
+    font-weight: 500;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--graphite);
+    margin: 0 0 .75rem;
+  }
+
+  .give {
+    display: inline-flex;
+    align-items: center;
+    gap: .625rem;
+    padding: .75rem 1.5rem;
+    border: 1.5px solid var(--ink);
+    background: var(--cut);
+    color: var(--paper);
+    text-decoration: none;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .875rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .give:hover,
+  .give:focus-visible {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .give:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  .give::after { content: "\2192"; }
+
   /* ---------- campaign ---------- */
 
   .campaign {
@@ -98,6 +169,10 @@
     border-bottom: 1px solid var(--rule);
   }
   .campaign:last-of-type { border-bottom: 0; }
+  .campaign.finished {
+    filter: grayscale(1);
+    opacity: .55;
+  }
 
   .campaign-head {
     display: flex;
@@ -128,7 +203,6 @@
     font-size: 1.0625rem;
     color: var(--ink);
   }
-  .met .tally b { color: var(--met); }
 
   /* ---------- the gauge: ruler + track + dimension line ---------- */
 
@@ -168,8 +242,6 @@
     background: var(--cut);
     transition: width 1.1s cubic-bezier(.16, .84, .34, 1);
   }
-  .met .fill { background: var(--met); }
-
   .overrun {
     position: absolute;
     top: 50%;
@@ -243,8 +315,6 @@
     color: var(--graphite);
     margin-top: .75rem;
   }
-  .met .remaining { color: var(--met); }
-
   /* ---------- donors ---------- */
 
   .ledger {
@@ -274,35 +344,6 @@
     transform: translateY(-.2em);
   }
   .ledger .amt { font-variant-numeric: tabular-nums; }
-
-  /* ---------- donate ---------- */
-
-  .give {
-    display: inline-flex;
-    align-items: center;
-    gap: .625rem;
-    margin-top: 1.5rem;
-    padding: .6875rem 1.25rem;
-    border: 1.5px solid var(--ink);
-    background: var(--cut);
-    color: var(--paper);
-    text-decoration: none;
-    font-family: "IBM Plex Mono", monospace;
-    font-size: .8125rem;
-    font-weight: 600;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    box-shadow: 4px 4px 0 var(--ink);
-    transition: transform .12s ease, box-shadow .12s ease;
-  }
-  .give:hover,
-  .give:focus-visible {
-    transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0 var(--ink);
-  }
-  .give:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-  .give::after { content: "\2192"; }
-  .met .give { background: var(--met); }
 
   /* ---------- title block ---------- */
 
@@ -369,6 +410,16 @@
     </p>
   </header>
 
+  <section class="give-panel" id="give-panel" hidden>
+    <div class="give-qr">
+      <img id="give-qr-img" src="/qr.svg" alt="Scan to donate" width="152" height="152">
+    </div>
+    <div class="give-copy">
+      <p class="give-label">Scan or tap to give</p>
+      <a class="give" id="give-link" href="#" target="_blank" rel="noopener">Donate</a>
+    </div>
+  </section>
+
   <div id="sheet-body">
     <div class="notice"><b>Loading</b>Pulling the latest figures.</div>
   </div>
@@ -384,7 +435,12 @@
 <script>
 const body = document.getElementById("sheet-body");
 const tb = document.getElementById("titleblock");
+const givePanel = document.getElementById("give-panel");
+const giveLink = document.getElementById("give-link");
+const giveQrImg = document.getElementById("give-qr-img");
 let rev = 0;
+
+giveQrImg.addEventListener("error", () => { givePanel.hidden = true; });
 
 const money = (cur, n) =>
   cur + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -413,7 +469,7 @@ function campaignHTML(c) {
     </div>` : "";
 
   return `
-    <section class="campaign ${met ? "met" : ""}">
+    <section class="campaign ${met ? "finished" : ""}">
       <div class="campaign-head">
         <h2 class="campaign-name">${esc(c.name)}</h2>
         <p class="tally"><b>${money(c.currency, c.raised)}</b> of ${money(c.currency, c.goal)}</p>
@@ -423,7 +479,7 @@ function campaignHTML(c) {
         <div class="scale">${ticks()}</div>
         <div class="track">
           <div class="fill"></div>
-          ${met ? `<span class="overrun">Goal met</span>` : ""}
+          ${met ? `<span class="overrun">Finished!</span>` : ""}
         </div>
         <div class="dim">
           <span class="dim-line l"></span>
@@ -433,13 +489,10 @@ function campaignHTML(c) {
       </div>
 
       <p class="remaining">${met
-        ? `Funded — ${money(c.currency, c.raised - c.goal)} over goal across ${c.count} gift${c.count === 1 ? "" : "s"}.`
+        ? `Finished! ${money(c.currency, c.raised)} raised across ${c.count} gift${c.count === 1 ? "" : "s"}.`
         : `${money(c.currency, short)} to go · ${c.count} gift${c.count === 1 ? "" : "s"} so far`}</p>
 
       ${ledger}
-
-      ${c.link ? `<a class="give" href="${esc(c.link)}" target="_blank" rel="noopener">
-        ${met ? "Give anyway" : "Donate"}</a>` : ""}
     </section>`;
 }
 
@@ -461,7 +514,20 @@ async function load() {
     return;
   }
 
-  const cs = data.campaigns;
+  if (data.donate_url) {
+    giveLink.href = data.donate_url;
+    givePanel.hidden = false;
+  } else {
+    givePanel.hidden = true;
+  }
+
+  // Active campaigns first, finished ones sink to the bottom; alphabetical
+  // order within each group is preserved since Array#sort is stable and the
+  // API already returns rows ordered by name.
+  const cs = [...data.campaigns].sort((a, b) => {
+    const aMet = a.raised >= a.goal, bMet = b.raised >= b.goal;
+    return aMet === bMet ? 0 : aMet ? 1 : -1;
+  });
 
   if (!cs.length) {
     body.innerHTML = `<div class="notice"><b>Nothing running yet</b>

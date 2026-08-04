@@ -54,6 +54,16 @@
   .masthead {
     padding: clamp(1.5rem, 4vw, 2.75rem);
     border-bottom: 1.5px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .masthead-main {
+    flex: 1 1 20rem;
+    min-width: 0;
   }
 
   .eyebrow {
@@ -74,11 +84,11 @@
   h1 {
     font-family: "IBM Plex Sans Condensed", sans-serif;
     font-weight: 700;
-    font-size: clamp(2.25rem, 8vw, 4rem);
+    font-size: clamp(2rem, 6vw, 3.5rem);
     line-height: .95;
     letter-spacing: .01em;
     text-transform: uppercase;
-    margin: 0 0 .75rem;
+    margin: 0;
   }
   h1 em {
     font-style: normal;
@@ -86,77 +96,64 @@
     color: var(--cut);
   }
 
-  .standfirst {
-    max-width: 34rem;
-    color: var(--graphite);
-    margin: 0;
-  }
-
   /* ---------- give panel (top-of-sheet donate + QR) ---------- */
 
   .give-panel {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
-    gap: clamp(1.25rem, 3vw, 2rem);
-    padding: clamp(1.25rem, 4vw, 2.75rem);
-    border-bottom: 1.5px solid var(--ink);
-    background:
-      repeating-linear-gradient(
-        -45deg,
-        transparent 0 5px,
-        rgba(97, 114, 124, .07) 5px 6px
-      );
+    gap: 1rem;
   }
 
   .give-qr {
     flex: 0 0 auto;
     line-height: 0;
-    padding: .5rem;
+    padding: .375rem;
     background: var(--paper);
     border: 1.5px solid var(--ink);
-    box-shadow: 4px 4px 0 var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
   }
   .give-qr img {
     display: block;
-    width: clamp(96px, 16vw, 152px);
-    height: clamp(96px, 16vw, 152px);
+    width: clamp(72px, 10vw, 140px);
+    height: clamp(72px, 10vw, 140px);
   }
 
   .give-copy {
-    flex: 1 1 auto;
-    min-width: 9rem;
+    flex: 0 0 auto;
   }
 
   .give-label {
     font-family: "IBM Plex Mono", monospace;
-    font-size: .6875rem;
+    font-size: .625rem;
     font-weight: 500;
-    letter-spacing: .18em;
+    line-height: 1.3;
+    letter-spacing: .14em;
     text-transform: uppercase;
     color: var(--graphite);
-    margin: 0 0 .75rem;
+    margin: 0 0 .5rem;
   }
 
   .give {
     display: inline-flex;
     align-items: center;
-    gap: .625rem;
-    padding: .75rem 1.5rem;
+    gap: .5rem;
+    padding: .5rem 1rem;
     border: 1.5px solid var(--ink);
     background: var(--cut);
     color: var(--paper);
     text-decoration: none;
     font-family: "IBM Plex Mono", monospace;
-    font-size: .875rem;
+    font-size: .75rem;
     font-weight: 600;
     letter-spacing: .1em;
     text-transform: uppercase;
-    box-shadow: 4px 4px 0 var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
     transition: transform .12s ease, box-shadow .12s ease;
   }
   .give:hover,
   .give:focus-visible {
-    transform: translate(2px, 2px);
+    transform: translate(1px, 1px);
     box-shadow: 2px 2px 0 var(--ink);
   }
   .give:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
@@ -398,27 +395,25 @@
 
 <main class="sheet">
   <header class="masthead">
-    <p class="eyebrow">
-      <span>Status sheet</span>
-      <span>Live from Discord</span>
-      <span id="rev">Rev —</span>
-    </p>
-    <h1>Shop fund<em>Where we stand</em></h1>
-    <p class="standfirst">
-      Every pledge logged in Discord lands here. Figures are dimensioned against
-      each goal, so you can read the gap at a glance.
-    </p>
-  </header>
+    <div class="masthead-main">
+      <p class="eyebrow">
+        <span>Status sheet</span>
+        <span>Live from Discord</span>
+        <span id="rev">Rev —</span>
+      </p>
+      <h1>Shop fund<em>Where we stand</em></h1>
+    </div>
 
-  <section class="give-panel" id="give-panel" hidden>
-    <div class="give-qr">
-      <img id="give-qr-img" src="/qr.svg" alt="Scan to donate" width="152" height="152">
+    <div class="give-panel" id="give-panel" hidden>
+      <div class="give-qr">
+        <img id="give-qr-img" src="/qr.svg" alt="Scan to donate" width="140" height="140">
+      </div>
+      <div class="give-copy">
+        <p class="give-label">Scan or tap<br>to give</p>
+        <a class="give" id="give-link" href="#" target="_blank" rel="noopener">Donate</a>
+      </div>
     </div>
-    <div class="give-copy">
-      <p class="give-label">Scan or tap to give</p>
-      <a class="give" id="give-link" href="#" target="_blank" rel="noopener">Donate</a>
-    </div>
-  </section>
+  </header>
 
   <div id="sheet-body">
     <div class="notice"><b>Loading</b>Pulling the latest figures.</div>

@@ -69,6 +69,18 @@ Condensed for display, Sans for body, Mono for all data and labels.
 The one third-party call on the page is Google Fonts. Dropping the two `<link>`
 tags falls back to system sans; layout holds, character is lost.
 
+## Kiosk layout keyed on `?kiosk`, not on screen shape
+
+The shop touchscreen (a portrait Debian PC running Firefox in kiosk mode, set up
+by kiosk-manager) loads the sheet as `/?kiosk`. That hides the Donate button and
+enlarges the QR code to 260px. Tapping Donate there would open Givebutter in a
+new tab on a shared screen with no browser controls to get back.
+
+Detection is an explicit query parameter because every implicit signal also
+matches visitors who should keep the button: portrait orientation and coarse
+pointers match phones, fullscreen matches anyone who presses F11, and the client
+IP is hidden behind the reverse proxy. `?kiosk=0` turns it off.
+
 ## Open threads
 
 - **Givebutter webhooks** would replace manual entry with real donation events.

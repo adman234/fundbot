@@ -39,6 +39,10 @@
 
   * { box-sizing: border-box; }
 
+  /* The hidden attribute has to beat the display rules on .give-panel and
+     .titleblock, or they render with placeholder values while loading. */
+  [hidden] { display: none !important; }
+
   html { -webkit-text-size-adjust: 100%; }
 
   body {
@@ -208,6 +212,26 @@
   }
   .give:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
   .give::after { content: "\2192"; }
+
+  .give-label-kiosk { display: none; }
+
+  /* ---------- kiosk mode (?kiosk): the shop touchscreen ----------
+     Tapping Donate there would open the payment page in a new tab on a shared
+     screen with no browser controls to get back, so the kiosk drops the
+     button and shows a larger QR code that visitors scan with their phones. */
+
+  :root[data-kiosk] .give,
+  :root[data-kiosk] .give-label-web { display: none; }
+  :root[data-kiosk] .give-label-kiosk { display: inline; }
+  :root[data-kiosk] .give-qr img {
+    width: min(260px, 60vw);
+    height: min(260px, 60vw);
+  }
+  :root[data-kiosk] .give-label {
+    font-size: .875rem;
+    color: var(--ink);
+    margin: 0;
+  }
 
   /* ---------- campaign ---------- */
 
@@ -438,6 +462,16 @@
     * { transition: none !important; animation: none !important; }
   }
 </style>
+<script>
+  // ?kiosk (or ?kiosk=1) marks the shop touchscreen; ?kiosk=0 turns it off.
+  // Runs before first paint so the kiosk layout never flashes the web one.
+  (function () {
+    const v = new URLSearchParams(location.search).get("kiosk");
+    if (v !== null && !/^(0|false|no|off)$/i.test(v)) {
+      document.documentElement.setAttribute("data-kiosk", "");
+    }
+  })();
+</script>
 </head>
 <body>
 
@@ -463,7 +497,10 @@
           <img id="give-qr-img" src="/qr.svg" alt="Scan to donate" width="168" height="168">
         </div>
         <div class="give-copy">
-          <p class="give-label">Scan or tap<br>to give</p>
+          <p class="give-label">
+            <span class="give-label-web">Scan or tap<br>to give</span>
+            <span class="give-label-kiosk">Scan with your<br>phone to give</span>
+          </p>
           <a class="give" id="give-link" href="#" target="_blank" rel="noopener">Donate</a>
         </div>
       </div>

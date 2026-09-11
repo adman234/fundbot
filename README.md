@@ -29,6 +29,14 @@ as a static page. The only mutation path is Discord — the web side exposes no 
 | `STATIC_DIR` | `/app/web` | |
 | `SHOW_DONORS` | `true` | `false` hides names on the web sheet only |
 
+## Kiosk layout
+
+Append `?kiosk` to the sheet URL on the shop touchscreen. The Donate button is
+hidden and the QR code grows to 260px, so visitors give from their own phones
+instead of opening the payment page on a shared screen. Without the parameter
+the page is unchanged; `?kiosk=0` turns it off. See `docs/DECISIONS.md` for why
+this is a URL parameter rather than screen detection.
+
 ## Releasing
 
 Push to `main` publishes `:latest`. Tagging publishes a pinned version and a

@@ -81,6 +81,21 @@ matches visitors who should keep the button: portrait orientation and coarse
 pointers match phones, fullscreen matches anyone who presses F11, and the client
 IP is hidden behind the reverse proxy. `?kiosk=0` turns it off.
 
+## Open GUI is a `kioskmgr://` link, not a call to localhost
+
+The kiosk masthead has a button that raises the kiosk-manager settings window on
+the terminal. A page cannot run a local program, so the options were a link in a
+scheme the terminal registers, or `fetch("http://127.0.0.1:…")` against a local
+endpoint in kiosk-manager.
+
+The link wins. The sheet is served over HTTPS, so a loopback request runs into
+mixed-content and private-network rules that differ by browser and version,
+needs CORS headers, and opens a local port that answers to any page the kiosk
+loads. A link carries none of that: kiosk-manager registers a `.desktop` handler
+for the scheme and preloads `handlers.json` in its Firefox profile so the link
+opens without a prompt. Anywhere the scheme is not registered the button is
+hidden, and clicking it would do nothing.
+
 ## Open threads
 
 - **Givebutter webhooks** would replace manual entry with real donation events.

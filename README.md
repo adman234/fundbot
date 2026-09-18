@@ -31,11 +31,19 @@ as a static page. The only mutation path is Discord — the web side exposes no 
 
 ## Kiosk layout
 
-Append `?kiosk` to the sheet URL on the shop touchscreen. The Donate button is
-hidden and the QR code grows to 260px, so visitors give from their own phones
-instead of opening the payment page on a shared screen. Without the parameter
-the page is unchanged; `?kiosk=0` turns it off. See `docs/DECISIONS.md` for why
-this is a URL parameter rather than screen detection.
+Append `?kiosk` to the sheet URL on the shop touchscreen. The masthead then
+shows a 180px QR code beside a stack of controls:
+
+| Control | Kiosk | Everywhere else |
+|---|---|---|
+| Dark / Light | button | button |
+| Open GUI | button, opens `kioskmgr://show` | hidden |
+| Scan to give | plain caption | link to the donate URL |
+
+Visitors give from their own phones rather than opening the payment page on a
+shared screen. Without the parameter the page is unchanged; `?kiosk=0` turns it
+off. See `docs/DECISIONS.md` for why this is a URL parameter rather than screen
+detection, and why the Open GUI button is a link rather than a local request.
 
 ## Releasing
 

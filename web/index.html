@@ -115,49 +115,54 @@
     color: var(--cut);
   }
 
-  /* ---------- masthead side column: theme toggle + give panel ---------- */
+  /* ---------- masthead side: QR code beside a stack of small controls ---- */
 
   .masthead-side {
     flex: 0 0 auto;
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: .875rem;
   }
 
-  .theme-toggle {
+  .side-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: .5rem;
+    min-width: 8.5rem;
+  }
+
+  /* One shared shape for every control in the stack, so they line up. */
+  .side-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: .4375rem;
-    padding: .375rem .625rem;
+    padding: .5rem .75rem;
     border: 1.5px solid var(--ink);
     background: var(--paper);
     color: var(--ink);
+    text-decoration: none;
     font-family: "IBM Plex Mono", monospace;
     font-size: .6875rem;
     font-weight: 600;
     letter-spacing: .08em;
     text-transform: uppercase;
+    text-align: center;
     cursor: pointer;
     box-shadow: 2px 2px 0 var(--ink);
     transition: transform .12s ease, box-shadow .12s ease;
   }
-  .theme-toggle:hover,
-  .theme-toggle:focus-visible {
+  .side-btn:hover,
+  .side-btn:focus-visible {
     transform: translate(1px, 1px);
     box-shadow: 1px 1px 0 var(--ink);
   }
-  .theme-toggle:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .side-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
   .theme-toggle-icon { font-size: .875rem; line-height: 1; }
 
-  /* ---------- give panel (top-of-sheet donate + QR) ---------- */
-
-  .give-panel {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
+  /* ---------- give panel (QR + donate link) ---------- */
 
   .give-qr {
     flex: 0 0 auto;
@@ -173,64 +178,40 @@
     height: clamp(86px, 12vw, 168px);
   }
 
-  .give-copy {
-    flex: 0 0 auto;
-  }
-
-  .give-label {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: .625rem;
-    font-weight: 500;
-    line-height: 1.3;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--graphite);
-    margin: 0 0 .5rem;
-  }
-
   .give {
-    display: inline-flex;
-    align-items: center;
-    gap: .5rem;
-    padding: .5rem 1rem;
-    border: 1.5px solid var(--ink);
     background: var(--cut);
     color: var(--paper-fixed);
-    text-decoration: none;
-    font-family: "IBM Plex Mono", monospace;
-    font-size: .75rem;
-    font-weight: 600;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    box-shadow: 3px 3px 0 var(--ink);
-    transition: transform .12s ease, box-shadow .12s ease;
   }
-  .give:hover,
-  .give:focus-visible {
-    transform: translate(1px, 1px);
-    box-shadow: 2px 2px 0 var(--ink);
-  }
-  .give:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
   .give::after { content: "\2192"; }
 
-  .give-label-kiosk { display: none; }
+  /* Caption that stands in for the donate link on the kiosk. */
+  .give-label {
+    display: none;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .6875rem;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--graphite);
+    margin: 0;
+  }
+
+  /* kioskmgr:// only resolves on the terminal, so hide it everywhere else. */
+  .open-gui { display: none; }
 
   /* ---------- kiosk mode (?kiosk): the shop touchscreen ----------
-     Tapping Donate there would open the payment page in a new tab on a shared
-     screen with no browser controls to get back, so the kiosk drops the
-     button and shows a larger QR code that visitors scan with their phones. */
+     A donate link there would open the payment page in a tab the kiosk
+     cannot leave, so it becomes a caption pointing at the QR code, and the
+     terminal gains a button that raises the kiosk-manager window. */
 
-  :root[data-kiosk] .give,
-  :root[data-kiosk] .give-label-web { display: none; }
-  :root[data-kiosk] .give-label-kiosk { display: inline; }
+  :root[data-kiosk] .give { display: none; }
+  :root[data-kiosk] .give-label { display: block; }
+  :root[data-kiosk] .open-gui { display: inline-flex; }
   :root[data-kiosk] .give-qr img {
-    width: min(260px, 60vw);
-    height: min(260px, 60vw);
-  }
-  :root[data-kiosk] .give-label {
-    font-size: .875rem;
-    color: var(--ink);
-    margin: 0;
+    width: min(180px, 46vw);
+    height: min(180px, 46vw);
   }
 
   /* ---------- campaign ---------- */
@@ -487,22 +468,21 @@
     </div>
 
     <div class="masthead-side">
-      <button type="button" id="theme-toggle" class="theme-toggle" aria-pressed="true">
-        <span class="theme-toggle-icon" aria-hidden="true">&#9789;</span>
-        <span class="theme-toggle-text">Dark</span>
-      </button>
+      <div class="give-qr" id="give-qr" hidden>
+        <img id="give-qr-img" src="/qr.svg" alt="Scan to donate" width="168" height="168">
+      </div>
 
-      <div class="give-panel" id="give-panel" hidden>
-        <div class="give-qr">
-          <img id="give-qr-img" src="/qr.svg" alt="Scan to donate" width="168" height="168">
-        </div>
-        <div class="give-copy">
-          <p class="give-label">
-            <span class="give-label-web">Scan or tap<br>to give</span>
-            <span class="give-label-kiosk">Scan with your<br>phone to give</span>
-          </p>
-          <a class="give" id="give-link" href="#" target="_blank" rel="noopener">Donate</a>
-        </div>
+      <div class="side-actions">
+        <button type="button" id="theme-toggle" class="side-btn" aria-pressed="true">
+          <span class="theme-toggle-icon" aria-hidden="true">&#9789;</span>
+          <span class="theme-toggle-text">Dark</span>
+        </button>
+
+        <a class="side-btn open-gui" id="open-gui" href="kioskmgr://show">Open GUI</a>
+
+        <a class="side-btn give" id="give-link" href="#" target="_blank" rel="noopener"
+           hidden>Scan to give</a>
+        <p class="give-label" id="give-label" hidden>Scan to give</p>
       </div>
     </div>
   </header>
@@ -522,15 +502,16 @@
 <script>
 const body = document.getElementById("sheet-body");
 const tb = document.getElementById("titleblock");
-const givePanel = document.getElementById("give-panel");
+const giveQr = document.getElementById("give-qr");
 const giveLink = document.getElementById("give-link");
+const giveLabel = document.getElementById("give-label");
 const giveQrImg = document.getElementById("give-qr-img");
 const themeToggle = document.getElementById("theme-toggle");
 const themeToggleText = themeToggle.querySelector(".theme-toggle-text");
 const themeToggleIcon = themeToggle.querySelector(".theme-toggle-icon");
 let rev = 0;
 
-giveQrImg.addEventListener("error", () => { givePanel.hidden = true; });
+giveQrImg.addEventListener("error", () => { giveQr.hidden = true; });
 
 function setTheme(mode) {
   document.documentElement.setAttribute("data-theme", mode);
@@ -616,12 +597,14 @@ async function load() {
     return;
   }
 
+  // The kiosk hides the link and shows the caption instead; both are driven
+  // from the same donate URL so neither appears without a QR code to scan.
   if (data.donate_url) {
     giveLink.href = data.donate_url;
-    givePanel.hidden = false;
-  } else {
-    givePanel.hidden = true;
   }
+  giveLink.hidden = !data.donate_url;
+  giveLabel.hidden = !data.donate_url;
+  giveQr.hidden = !data.donate_url;
 
   // Active campaigns first, finished ones sink to the bottom; alphabetical
   // order within each group is preserved since Array#sort is stable and the

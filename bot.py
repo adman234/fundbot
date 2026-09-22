@@ -13,7 +13,9 @@ Env:
 """
 
 import os
+import socket
 import sqlite3
+import time
 from datetime import datetime, timezone
 
 import discord
@@ -369,4 +371,27 @@ async def on_ready():
     print(f"Logged in as {bot.user} ({len(bot.guilds)} guild(s))")
 
 
+def wait_for_dns(host: str = "discord.com", timeout: float = 300) -> None:
+    """Block until DNS resolves.
+
+    On Unraid this container can start before the router/AdGuard finishes
+    booting; login() raising here kills the whole process (bot + web sheet)
+    with no restart policy applied. Retry with backoff instead of failing fast.
+    """
+    deadline = time.monotonic() + timeout
+    delay = 1
+    while True:
+        try:
+            socket.getaddrinfo(host, 443)
+            return
+        except socket.gaierror:
+            if time.monotonic() >= deadline:
+                print(f"[startup] DNS still unresolved for {host} after {timeout:.0f}s, trying anyway")
+                return
+            print(f"[startup] DNS not ready ({host}), retrying in {delay}s")
+            time.sleep(delay)
+            delay = min(delay * 2, 30)
+
+
+wait_for_dns()
 bot.run(TOKEN)

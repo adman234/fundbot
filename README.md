@@ -1,9 +1,21 @@
 # fundbot
 
-Discord fundraising tracker with a public status sheet.
+A Discord bot for tracking makerspace fundraising campaigns, plus a public
+read-only web page that shows progress toward each goal.
 
-Slash commands write to SQLite; a read-only aiohttp server renders the same data
-as a static page. The only mutation path is Discord — the web side exposes no writes.
+Organizers log donations with slash commands. The bot stores them in SQLite, and
+a small web server in the same container shows the same data as a status sheet.
+Discord is the only way to change anything; the web page is read-only.
+
+## Running it
+
+The image is published to GHCR on every push to `main`:
+
+```
+docker run -d --name fundbot   -e DISCORD_TOKEN=...   -e GUILD_ID=...   -p 8099:8099   -v /mnt/user/appdata/fundbot:/data   ghcr.io/adman234/fundbot:latest
+```
+
+`/healthz` returns `ok` once the web server is up.
 
 ## Commands
 
@@ -21,9 +33,9 @@ as a static page. The only mutation path is Discord — the web side exposes no 
 
 | Var | Default | Notes |
 |---|---|---|
-| `DISCORD_TOKEN` | — | required |
-| `DONATE_URL` | — | default link applied to new campaigns |
-| `GUILD_ID` | — | set for instant slash-command sync |
+| `DISCORD_TOKEN` | | required |
+| `DONATE_URL` | | default link applied to new campaigns |
+| `GUILD_ID` | | set for instant slash-command sync |
 | `DB_PATH` | `/data/fundraiser.db` | |
 | `WEB_PORT` | `8099` | |
 | `STATIC_DIR` | `/app/web` | |

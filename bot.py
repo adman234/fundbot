@@ -10,6 +10,9 @@ Env:
   WEB_PORT       (optional)  default 8099
   STATIC_DIR     (optional)  default /app/web
   SHOW_DONORS    (optional)  "false" hides donor names from the web sheet only
+  VENMO_URL, DISCORD_URL, MEMBERSHIP_URL
+                 (optional)  QR codes on the web sheet; empty hides one
+  CALENDAR_API_URL (optional) CGW website /api/calendar for the sheet's calendar
 """
 
 import os

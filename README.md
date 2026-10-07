@@ -40,20 +40,43 @@ docker run -d --name fundbot   -e DISCORD_TOKEN=...   -e GUILD_ID=...   -p 8099:
 | `WEB_PORT` | `8099` | |
 | `STATIC_DIR` | `/app/web` | |
 | `SHOW_DONORS` | `true` | `false` hides names on the web sheet only |
+| `VENMO_URL` | CGW Venmo link | "Donate with Venmo" QR code; empty hides it |
+| `DISCORD_URL` | CGW Discord invite | "Join the Discord" QR code; empty hides it |
+| `MEMBERSHIP_URL` | columbiagadgetworks.org/membership/ | "Become a member" QR code; empty hides it |
+| `CALENDAR_API_URL` | | `https://columbiagadgetworks.org/api/calendar` once the site serves it; empty shows the standing schedule |
+
+## Two panels
+
+The page holds two panels and a big button near the QR codes switches
+between them with a slide, without loading anything:
+
+* **Shop fund**: the campaigns, with "Donate with credit card" (`DONATE_URL`)
+  and "Donate with Venmo" (`VENMO_URL`) QR codes under the masthead.
+* **Columbia Gadget Works**, in CGW orange: a month calendar with previous /
+  next / this month buttons, then "Join the Discord" and "Become a member" QR
+  codes at the foot.
+
+The calendar reads `GET /api/calendar?from=YYYY-MM`, which this server fetches
+from `CALENDAR_API_URL` (the CGW website's calendar endpoint) and caches for 10
+minutes. Until that is set, or while it is unreachable, the grid shows the
+standing schedule instead: Open Hack Night every Thursday, and the free City of
+Columbia class on the first Thursday from November 2026 to October 2027.
 
 ## Kiosk layout
 
-Append `?kiosk` to the sheet URL on the shop touchscreen. The masthead then
-shows a 180px QR code beside a stack of controls:
+Append `?kiosk` to the sheet URL on the shop touchscreen:
 
 | Control | Kiosk | Everywhere else |
 |---|---|---|
 | Dark / Light | button | button |
 | Open GUI | button, opens `kioskmgr://show` | hidden |
-| Scan to give | plain caption | link to the donate URL |
+| Minimize (top right corner) | button, opens `kioskmgr://minimize` | hidden |
+| QR captions | plain labels | links to the same URLs |
+| Information panel | returns to the fund panel after 2 minutes untouched | stays |
 
 Visitors give from their own phones rather than opening the payment page on a
-shared screen. Without the parameter the page is unchanged; `?kiosk=0` turns it
+shared screen. kiosk-manager's watchdog recognises the page by "Shop Fund" in
+its `<title>`, so keep that in the title. Without the parameter the page is unchanged; `?kiosk=0` turns it
 off. See `docs/DECISIONS.md` for why this is a URL parameter rather than screen
 detection, and why the Open GUI button is a link rather than a local request.
 

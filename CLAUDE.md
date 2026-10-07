@@ -17,8 +17,11 @@ only write path; the web side exposes no mutations.
 
 ```
 bot.py              Discord client, slash commands, SQLite schema + migrations
-webserver.py        aiohttp app: /api/campaigns, /healthz, / (static sheet)
-web/index.html      Self-contained page — CSS and JS inline, no build step
+webserver.py        aiohttp app: /api/campaigns, /api/calendar (read-only
+                    proxy of the CGW site's calendar), /qr/<name>.svg,
+                    /healthz, / (static sheet)
+web/index.html      Self-contained page — CSS and JS inline, no build step.
+                    Two panels (shop fund, CGW info) swapped in place.
 Dockerfile          Published to GHCR by CI
 .github/workflows/publish.yml
 docs/               Deployment, design rationale, decision log

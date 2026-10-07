@@ -96,6 +96,35 @@ for the scheme and preloads `handlers.json` in its Firefox profile so the link
 opens without a prompt. Anywhere the scheme is not registered the button is
 hidden, and clicking it would do nothing.
 
+## Two panels in one page, not two pages
+
+The kiosk switches between the fund sheet and a Columbia Gadget Works panel
+(calendar, Discord and membership QR codes). Both panels ship in
+`index.html` and a button swaps them with a CSS transition. A second page or
+a hash route would mean a navigation on the touchscreen: slower, a flash of
+blank screen, and a URL kiosk-manager's watchdog would have to accept as
+"the right page". The title stays the same on both panels for that reason.
+
+## Calendar fetched by the server, not the browser
+
+The calendar of record is the CGW website's `/api/calendar` (a Worker reading
+a Google Calendar ICS feed). The sheet asks its own server, which fetches the
+site's endpoint with `CALENDAR_API_URL` and caches each month for 10 minutes.
+Fetching the site from the browser would need CORS on the website's Worker
+and add a second third-party origin to a page that otherwise only calls
+Google Fonts. This is an outbound GET with a validated `YYYY-MM` parameter
+and a fixed upstream URL, not a write path and not an open proxy.
+
+Until the site's calendar is live the page draws the standing schedule from
+the site's own recurring events list, and says so under the grid.
+
+## Minimize is a `kioskmgr://` link too
+
+Firefox in kiosk mode has no window controls, so the page carries a Minimize
+button in the top right corner on `?kiosk` only. It is a `kioskmgr://minimize`
+link for the same reasons as Open GUI. kiosk-manager minimises the browser to
+reveal its settings window and holds off its watchdog for a few minutes.
+
 ## Open threads
 
 - **Givebutter webhooks** would replace manual entry with real donation events.

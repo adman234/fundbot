@@ -28,7 +28,7 @@ QR_LINKS = {
         "https://www.paypal.com/qrcodes/venmocs/da49c07b-2aeb-42b7-9cd4-731507b6012b"
         "?created=1791391114",
     ).strip(),
-    "discord": os.environ.get("DISCORD_URL", "https://discord.gg/F7kM7ardMs").strip(),
+    "discord": os.environ.get("DISCORD_URL", "https://discord.gg/yjpeBrAjuR").strip(),
     "membership": os.environ.get(
         "MEMBERSHIP_URL", "https://columbiagadgetworks.org/membership/"
     ).strip(),

@@ -43,7 +43,7 @@ docker run -d --name fundbot   -e DISCORD_TOKEN=...   -e GUILD_ID=...   -p 8099:
 | `VENMO_URL` | CGW Venmo link | "Donate with Venmo" QR code; empty hides it |
 | `DISCORD_URL` | CGW Discord invite | "Join the Discord" QR code; empty hides it |
 | `MEMBERSHIP_URL` | columbiagadgetworks.org/membership/ | "Become a member" QR code; empty hides it |
-| `CALENDAR_API_URL` | | the website's `/api/calendar`; empty shows the standing schedule |
+| `CALENDAR_API_URL` | | `https://columbiagadgetworks.org/api/calendar` once the site serves it; empty shows the standing schedule |
 
 ## Two panels
 

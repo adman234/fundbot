@@ -125,10 +125,23 @@ button in the top right corner on `?kiosk` only. It is a `kioskmgr://minimize`
 link for the same reasons as Open GUI. kiosk-manager minimises the browser to
 reveal its settings window and holds off its watchdog for a few minutes.
 
+## Moved to the website Worker; Givebutter gifts counted by API
+
+The `/fund` commands and the kiosk figures now run in the Columbia Gadget Works
+website's Cloudflare Worker (`ColumbiaGadgetWorks/website`, `src/fund*.js`,
+D1 database `fundraiser`). The Python bot in this repo is no longer what
+answers Discord.
+
+That Worker also counts Givebutter gifts, superseding "Manual ledger" above.
+A five-minute cron *polls* the Givebutter API rather than receiving webhooks:
+it needs no new inbound route, catches up by itself after an outage, and
+picks up refunds on the next pass. Donors choose a goal with Givebutter
+**Funds** on the existing donation page, so no per-goal donation link is
+needed; `/fund map` ties a goal to a fund code. Free-text matching on the
+donor's message only feeds a review list, never the totals.
+
 ## Open threads
 
-- **Givebutter webhooks** would replace manual entry with real donation events.
-  Needs an authenticated inbound route and signature verification.
 - **Donor privacy.** The sheet publishes the six most recent donor names per
   campaign to the open internet. People who gave a name in a Discord server did
   not necessarily agree to that audience. `SHOW_DONORS=false` is the switch;

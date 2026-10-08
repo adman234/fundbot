@@ -1,5 +1,10 @@
 # fundbot
 
+> **Moved.** The `/fund` commands, the kiosk figures and the Givebutter sync
+> now run in the Columbia Gadget Works website's Cloudflare Worker
+> (`ColumbiaGadgetWorks/website`, `src/fund*.js`). This repo is the original
+> self-hosted bot, kept for reference. See `docs/DECISIONS.md`.
+
 A Discord bot for tracking makerspace fundraising campaigns, plus a public
 read-only web page that shows progress toward each goal.
 

@@ -1,5 +1,11 @@
 # fundbot
 
+> **Archived.** The `/fund` commands and the shop kiosk page now run in the
+> Columbia Gadget Works website's Cloudflare Worker, with no bot process. See
+> [ColumbiaGadgetWorks/website](https://github.com/ColumbiaGadgetWorks/website),
+> especially `docs/fund-bot.md` and the README's "Shop fund database and the /fund
+> Discord commands" section. This repository is kept for history only.
+
 A Discord bot for tracking makerspace fundraising campaigns, plus a public
 read-only web page that shows progress toward each goal.
 
